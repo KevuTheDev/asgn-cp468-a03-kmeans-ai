@@ -221,31 +221,35 @@ def kmeans(p_pointList, p_k=1):
     :param p_k: Integer based on how many clusters
     :return: None
     '''
-    classifierModified = True
+    classifierModified = True  # To identify if Point(s) have been modified
     f_pointsList = deepcopy(p_pointList)
     f_centroidsList = CreateCentroids(f_pointsList, p_k)
     PlotData(f_pointsList, f_centroidsList)
     print()
 
-    counter = 0
+    counter = 0 # just to determine how many cycles (irrelevant for assignment)
     while classifierModified:
         counter += 1
         classifierModified = False
         ResetCentroidList(f_centroidsList)
 
-        for i in f_pointsList:  # main loop
+        for i in f_pointsList:  # main loop   # Check each Points in PointsList
             edistanceList = []
             for j in f_centroidsList:  # loop through centroids
+                #store distance from Centroid (j) to Point (i)
                 dist = EuclideanDistancePointCentroid(i, j)
                 edistanceList.append(dist)
 
+            # find the centroid (j) with the shortest distance to the Point (i)
             verdict = MinimumDistance(edistanceList)
             if verdict != i.classifier:
+                # determine if the Point has new classifier
                 if classifierModified == False:
                     classifierModified = True
 
                 i.setClassifier(verdict)
 
+            # store Point (i) into Centroid (j) list
             f_centroidsList[i.classifier].addPoint(i)
 
         RepositionCentroidList(f_centroidsList)
@@ -254,6 +258,12 @@ def kmeans(p_pointList, p_k=1):
 
 
 if __name__ == '__main__':
+    # Configurations
+    k_value = 2 # This k-value has a bound of [0, 7]
+                # This is bound to this as it is limited to how big COLORS (constant) is
+
+
+
     # Obtains the Data
     mainData = pd.read_csv("data/kmeans.csv", index_col=None, header=0, engine='python')
     # Convert from dataframe to a 2D list
@@ -264,5 +274,5 @@ if __name__ == '__main__':
     # Plot the starting of what the data looks like
     PlotData(pointsList)
     # Generate the k-means clustering
-    kmeans(pointsList,2)
+    kmeans(pointsList,k_value)
 
